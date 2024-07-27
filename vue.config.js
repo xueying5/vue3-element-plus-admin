@@ -1,4 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
+const AutoImport = require('unplugin-auto-import/webpack').default
+const Components = require('unplugin-vue-components/webpack').default
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 module.exports = defineConfig({
   transpileDependencies: true,
   // 基本路径
@@ -8,7 +11,16 @@ module.exports = defineConfig({
   * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   **/
   chainWebpack: (config) => {},
-  configureWebpack: (config) => {},
+  configureWebpack: {
+    plugins: [
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+  },
   // 生产环境是否生成 sourceMap 文件
   productionSourceMap: false,
   css: {
@@ -16,8 +28,12 @@ module.exports = defineConfig({
     extract: true,
     sourceMap: false,
     // css预设器配置项
-    loaderOptions: {},
-    requireModuleExtension: true
+    loaderOptions: {
+      scss: {
+        additionalData: `@import "~@/assets/styles/main.scss";`
+      }
+    },
+    // requireModuleExtension: true
   },
   // use thread-loader for babel & TS in production build
   // enabled by default if the machine has more than 1 cores
